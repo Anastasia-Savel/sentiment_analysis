@@ -1,9 +1,9 @@
 json
 re
-matplotlib.pyplot as plt
-numpy as np
-onnxruntime as ort
-pandas as pd
+matplotlib
+numpy
+onnxruntime
+pandas
 scipy
-seaborn as sns
-streamlit as st
+seaborn
+streamlit
