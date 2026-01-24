@@ -60,6 +60,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
 # Функция загрузки словаря
 @st.cache_resource
 def load_vocab(json_path):
@@ -67,12 +68,14 @@ def load_vocab(json_path):
         vocab = json.load(f)
     return vocab
 
+
 # Функция загрузки модели
 @st.cache_resource
 def load_onnx_model(onnx_path):
     providers = ['CPUExecutionProvider']
     session = ort.InferenceSession(onnx_path, providers=providers)
     return session
+
 
 # Функция предобработки текста
 def preprocess_text(text, vocab):
@@ -86,9 +89,9 @@ def preprocess_text(text, vocab):
 
     return np.array(indices, dtype=np.int64).reshape(1, -1)
 
+
 # Функция для инференса
 def predict_sentiment(text, session, vocab):
-
     input_data = preprocess_text(text, vocab)
 
     outputs = session.run(None, {'input': input_data})
@@ -106,9 +109,11 @@ vocab = load_vocab(VOCAB_PATH)
 session = load_onnx_model(MODEL_PATH)
 class_names = {0: 'Neutral', 1: 'Positive', 2: 'Negative'}
 
+
 def set_page(page):
     # Выбор страницы
     st.session_state.page = page
+
 
 # Левое меню
 with st.sidebar:
@@ -135,9 +140,11 @@ with st.sidebar:
 if 'text_cleared' not in st.session_state:
     st.session_state.text_cleared = False
 
+
 # Функция для очистки
 def clear_text():
     st.session_state.text_area_content = ''
+
 
 # Стартовая страница
 if 'page' not in st.session_state:
@@ -148,20 +155,21 @@ if st.session_state.page == 'project':
     st.header("Анализ тональности текста")
     st.markdown("#### <span style='color: #b11226'>Области применения:</span>", unsafe_allow_html=True)
     st.markdown("• анализ отзывов клиентов на сайтах и маркетплейсах,\n\n"
-             "• мониторинг тональности обсуждений в социальных сетях,\n\n"
-             "• сортировка и приоритизация обращений в службу поддержки,\n\n"
-             "• оценка результатов опросов и анкетирования,\n\n"
-             "• исследование репутации бренда и медиа-анализа,\n\n"
-             "• анализ тональности новостей и публикаций в СМИ.")
+                "• мониторинг тональности обсуждений в социальных сетях,\n\n"
+                "• сортировка и приоритизация обращений в службу поддержки,\n\n"
+                "• оценка результатов опросов и анкетирования,\n\n"
+                "• исследование репутации бренда и медиа-анализа,\n\n"
+                "• анализ тональности новостей и публикаций в СМИ.")
     st.markdown("#### <span style='color: #b11226'>Модели машинного обучения:</span>", unsafe_allow_html=True)
-    st.write("• классическая модель логистической регрессии,\n\n"
-             "• классическая модель наивного байеса,\n\n"
+    st.write("• наивный байесовский классификатор,\n\n"
+             "• логистическая регрессия,\n\n"
              "• рекурентная нейронная сеть LSTM,\n\n"
              "• предобученный трансформер SBERT.\n\n")
 
 elif st.session_state.page == 'data':
     st.markdown("#### <span style='color: #b11226'>Источник данных:</span>", unsafe_allow_html=True)
-    st.write("открытый датасет с kaggle:\n\nhttps://www.kaggle.com/datasets/mar1mba/russian-sentiment-dataset/data\n\n\n")
+    st.write(
+        "открытый датасет с kaggle:\n\nhttps://www.kaggle.com/datasets/mar1mba/russian-sentiment-dataset/data\n\n\n")
     st.markdown("#### <span style='color: #b11226'>Предобработка данных:", unsafe_allow_html=True)
     st.write("• нормализация,\n\n"
              "• очистка от шума,\n\n"
@@ -170,26 +178,28 @@ elif st.session_state.page == 'data':
     st.image('class.png', width=500)
     st.write("##### Распределение по количеству слов")
     st.write("\n\n")
-    st.image('text.png', use_column_width=True,)
+    st.image('text.png', use_column_width=True, )
 
 elif st.session_state.page == 'metrics':
     st.markdown("### <span style='color: #b11226'>Основные метрики\n\n</span>", unsafe_allow_html=True)
     colors = ['#cae1ff', '#fff4ca', '#d2ffd4', '#ffd2ca', '#e8d3ff']
 
-    # F1-score
-    data_f1 = {
-        'Модель': ['Naive Bayes', 'Logistic Regression', 'LSTM + Navec', 'LSTM + Navec (small)', 'SBERT-large'],
-        'Neutral': [0.60, 0.60, 0.62, 0.44, 0.59],
-        'Positive': [0.78, 0.79, 0.82, 0.5, 0.79],
-        'Negative': [0.68, 0.71, 0.73, 0.5, 0.74]
-    }
+    df = pd.DataFrame(
+        {'Модель': ['Naive Bayes', 'Logistic Regression', 'LSTM + Navec', 'LSTM + Navec (small)', 'SBERT-large'],
+         'F1 Neutral': [0.60, 0.60, 0.62, 0.44, 0.59],
+         'F1 Positive': [0.78, 0.79, 0.82, 0.5, 0.79],
+         'F1 Negative': [0.68, 0.71, 0.73, 0.5, 0.74],
+         'Accuracy': [0.68, 0.70, 0.72, 0.48, 0.71],
+         'Time (sec)': [0.017, 0.037, 0.032, 0.002, 0.015],
+         })
+    st.dataframe(df.set_index('Модель'), use_container_width=True)
 
-    df_f1 = pd.DataFrame(data_f1)
-
-    df_long = df_f1.melt(id_vars='Модель', var_name='Класс', value_name='F1-score')
-    fig, ax = plt.subplots(figsize=(10, 5))
+    # График А1-score
+    df_f1 = df[['Модель', 'F1 Neutral', 'F1 Positive', 'F1 Negative']].melt(id_vars='Модель', var_name='Класс',
+                                                                            value_name='F1-score')
+    fig, ax = plt.subplots(figsize=(10, 4.5))
     sns.barplot(
-        data=df_long,
+        data=df_f1,
         x='Класс',
         y='F1-score',
         hue='Модель',
@@ -201,23 +211,13 @@ elif st.session_state.page == 'metrics':
     )
     ax.spines[['top', 'right']].set_visible(False)
     ax.spines[['left', 'bottom']].set_linewidth(0.7)
+    ax.legend(loc='lower center', bbox_to_anchor=(0.49, 1.05), ncol=5)
     plt.tight_layout()
-
-    st.write("##### F1-score\n\n</span>", unsafe_allow_html=True)
-    st.dataframe(df_f1.set_index('Модель'), use_container_width=True)
     st.pyplot(fig)
 
-    #Accuracy + Time
-    data_acc_tm = {
-        'Модель': ['Naive Bayes', 'Logistic Regression', 'LSTM + Navec', 'LSTM + Navec (small)', 'SBERT-large'],
-        'Accuracy': [0.68, 0.70, 0.72, 0.48, 0.71],
-        'Time (sec)': [0.017, 0.037, 0.032, 0.002, 0.015],
-    }
-    df_acc_tm = pd.DataFrame(data_acc_tm)
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-
     # График Accuracy
+    df_acc_tm = df[['Модель', 'Accuracy', 'Time (sec)']]
+    fig2, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
     sns.barplot(
         data=df_acc_tm,
         x='Модель',
@@ -232,18 +232,18 @@ elif st.session_state.page == 'metrics':
     ax1.set_xlabel('')
     ax1.set_xticklabels([])
     ax1.set_xticks([])
-    ax1.set_ylim(0, 1)
 
     # График Time
     sns.barplot(
         data=df_acc_tm,
         x='Модель',
         y='Time (sec)',
+        hue='Модель',
         ax=ax2,
         palette=colors,
         width=0.5,
         linewidth=1,
-        edgecolor='gray'
+        edgecolor='gray',
     )
     ax2.set_ylabel('Time (sec)', fontsize=12)
     ax2.set_xlabel('')
@@ -253,20 +253,9 @@ elif st.session_state.page == 'metrics':
     for ax in [ax1, ax2]:
         ax.spines[['top', 'right']].set_visible(False)
         ax.spines[['left', 'bottom']].set_linewidth(0.7)
-    handles = [plt.Rectangle((0, 0), 1, 1, color=colors[i], edgecolor='gray')
-               for i in range(len(df_acc_tm['Модель']))]
-    fig.legend(handles, df_acc_tm['Модель'],
-               title='Модель',
-               loc='center right',
-               bbox_to_anchor=(0.3, 0.85),
-               fontsize=11,
-               title_fontsize=12)
+
     plt.tight_layout()
-
-    st.write("##### Accuracy + Time\n\n</span>", unsafe_allow_html=True)
-    st.dataframe(df_acc_tm.set_index('Модель'), use_container_width=True)
-    st.pyplot(fig)
-
+    st.pyplot(fig2)
 
 elif st.session_state.page == 'loss':
     st.markdown("### <span style='color: #b11226'>Матрицы ошибок\n\n</span>", unsafe_allow_html=True)
@@ -343,4 +332,3 @@ elif st.session_state.page == 'lstm':
 
     if analyze_clicked and not text_input.strip():
         st.warning("Пожалуйста, введите текст для анализа")
-
