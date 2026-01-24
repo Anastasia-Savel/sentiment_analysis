@@ -186,10 +186,10 @@ elif st.session_state.page == 'metrics':
 
     df = pd.DataFrame(
         {'Модель': ['Naive Bayes', 'Logistic Regression', 'LSTM + Navec', 'LSTM + Navec (small)', 'SBERT-large'],
-         'F1 Neutral': [0.60, 0.60, 0.62, 0.44, 0.59],
-         'F1 Positive': [0.78, 0.79, 0.82, 0.5, 0.79],
-         'F1 Negative': [0.68, 0.71, 0.73, 0.5, 0.74],
-         'Accuracy': [0.68, 0.70, 0.72, 0.48, 0.71],
+         'F1 Neutral': [0.59, 0.59, 0.61, 0.44, 0.60],
+         'F1 Positive': [0.77, 0.79, 0.82, 0.5, 0.79],
+         'F1 Negative': [0.67, 0.70, 0.73, 0.5, 0.73],
+         'Accuracy': [0.68, 0.69, 0.72, 0.48, 0.71],
          'Time (sec)': [0.017, 0.037, 0.032, 0.002, 0.015],
          })
     st.dataframe(df.set_index('Модель'), use_container_width=True)
@@ -332,3 +332,4 @@ elif st.session_state.page == 'lstm':
 
     if analyze_clicked and not text_input.strip():
         st.warning("Пожалуйста, введите текст для анализа")
+
