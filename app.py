@@ -167,10 +167,10 @@ if st.session_state.page == 'project':
              "• предобученный трансформер SBERT.\n\n")
 
 elif st.session_state.page == 'data':
-    st.markdown("#### <span style='color: #b11226'>Источник данных:</span>", unsafe_allow_html=True)
+    st.markdown("#### <span style='color: #b11226'>Источник данных</span>", unsafe_allow_html=True)
     st.write(
-        "открытый датасет с kaggle:\n\nhttps://www.kaggle.com/datasets/mar1mba/russian-sentiment-dataset/data\n\n\n")
-    st.markdown("#### <span style='color: #b11226'>Предобработка данных:", unsafe_allow_html=True)
+        "Открытый датасет с kaggle:\n\nhttps://www.kaggle.com/datasets/mar1mba/russian-sentiment-dataset/data\n\n\n")
+    st.markdown("#### <span style='color: #b11226'>Предобработка данных", unsafe_allow_html=True)
     st.write("• нормализация,\n\n"
              "• очистка от шума,\n\n"
              "• лемматизация.\n\n")
@@ -332,4 +332,5 @@ elif st.session_state.page == 'lstm':
 
     if analyze_clicked and not text_input.strip():
         st.warning("Пожалуйста, введите текст для анализа")
+
 
